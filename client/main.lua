@@ -101,7 +101,7 @@ local function GetDeliveryLocation()
     PolyZone:onPlayerInOut(function(isPointInside)
         if isPointInside then
             inRange = true
-            exports["core"]:DrawText('[E] Bus Stop', 'rgb(220, 20, 60)')
+            BJCore.Functions.Notify('[E] Bus Stop', 'primary')
             CreateThread(function()
                 repeat
                     Wait(0)
@@ -247,7 +247,7 @@ RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
             PolyZone:onPlayerInOut(function(isPointInside)
                 if isPointInside then
                     inRange = true
-                    exports["core"]:DrawText('[E] Bus Stop', 'rgb(220, 20, 60)')
+                     BJCore.Functions.Notify('[E] Bus Stop', 'primary')
                     CreateThread(function()
                         repeat
                             Wait(5)
@@ -309,14 +309,14 @@ CreateThread(function()
                     repeat
                         Wait(5)
                         if not inVeh then
-                            exports["core"]:DrawText('[E] Bus Stop', 'left')
+                                BJCore.Functions.Notify('[E] Bus Stop', 'primary')
                             if IsControlJustReleased(0, 38) then
                                 busGarage()
                                 exports["core"]:HideText()
                                 break
                             end
                         else
-                            exports["core"]:DrawText('[E] Stop Working', 'left')
+                            BJCore.Functions.Notify('[E] Stop Working', 'primary')
                             if IsControlJustReleased(0, 38) then
                                 if (not NpcData.Active or NpcData.Active and NpcData.NpcTaken == false) then
                                     if IsPedInAnyVehicle(PlayerPedId(), false) then

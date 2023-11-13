@@ -1,6 +1,13 @@
 # qb-busjob
-Bus Job For BJ-Core
+Bus Job For BJ-Core Originally Made By [GhzGarage](https://github.com/GhzGarage) For QBCORE. Please be sure to create an issue if I have done anything wrong!
 
+# Discalmer
+- Only uses English Laungage, but can be changed in both client and server.lua to any laungage in under 5 minutes!
+
+# Dependicies
+```
+- BJCORE Framework
+```
 # License
 
     QBCore Framework

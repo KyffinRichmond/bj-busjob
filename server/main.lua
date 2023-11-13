@@ -22,9 +22,9 @@ RegisterNetEvent('bj-busjob:server:NpcPay', function()
             if randomAmount == r1 or randomAmount == r2 then Payment = Payment + math.random(10, 20) end
             Player.Functions.AddMoney('cash', Payment)
         else
-            DropPlayer(src, Lang:t('error.exploit'))
+            DropPlayer(src, 'Attempting To Exploit')
         end
     else
-        DropPlayer(src, Lang:t('error.exploit'))
+        DropPlayer(src, 'Attempting To Exploit')
     end
 end)

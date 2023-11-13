@@ -1,4 +1,4 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local BJCore = exports['core']:GetCoreObject()
 
 function NearBus(src)
     local ped = GetPlayerPed(src)
@@ -11,9 +11,9 @@ function NearBus(src)
     end
 end
 
-RegisterNetEvent('qb-busjob:server:NpcPay', function()
+RegisterNetEvent('bj-busjob:server:NpcPay', function()
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = BJCore.Functions.GetPlayer(src)
     local Payment = math.random(15, 25)
     if Player.PlayerData.job.name == "bus" then
         if NearBus(src) then

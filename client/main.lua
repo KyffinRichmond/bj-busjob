@@ -1,6 +1,6 @@
 -- Variables
-local QBCore = exports['qb-core']:GetCoreObject()
-local PlayerData = QBCore.Functions.GetPlayerData()
+local BJCore = exports['core']:GetCoreObject()
+local PlayerData = BJCore.Functions.GetPlayerData()
 local route = 1
 local max = #Config.NPCLocations.Locations
 local busBlip = nil
@@ -101,7 +101,7 @@ local function GetDeliveryLocation()
     PolyZone:onPlayerInOut(function(isPointInside)
         if isPointInside then
             inRange = true
-            exports["qb-core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
+            exports["core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
             CreateThread(function()
                 repeat
                     Wait(0)
@@ -113,7 +113,7 @@ local function GetDeliveryLocation()
                         SetEntityAsNoLongerNeeded(NpcData.Npc)
                         local targetCoords = Config.NPCLocations.Locations[NpcData.LastNpc]
                         TaskGoStraightToCoord(NpcData.Npc, targetCoords.x, targetCoords.y, targetCoords.z, 1.0, -1, 0.0, 0.0)
-                        QBCore.Functions.Notify(Lang:t('success.dropped_off'), 'success')
+                        BJCore.Functions.Notify(Lang:t('success.dropped_off'), 'success')
                         if NpcData.DeliveryBlip ~= nil then
                             RemoveBlip(NpcData.DeliveryBlip)
                         end
@@ -125,15 +125,15 @@ local function GetDeliveryLocation()
                         RemovePed(NpcData.Npc)
                         resetNpcTask()
                         nextStop()
-                        TriggerEvent('qb-busjob:client:DoBusNpc')
-                        exports["qb-core"]:HideText()
+                        TriggerEvent('bj-busjob:client:DoBusNpc')
+                        exports["core"]:HideText()
                         PolyZone:destroy()
                         break
                     end
                 until not inRange
             end)
         else
-            exports["qb-core"]:HideText()
+            exports["core"]:HideText()
             inRange = false
         end
     end)
@@ -155,7 +155,7 @@ local function busGarage()
         vehicleMenu[#vehicleMenu + 1] = {
             header = v.label,
             params = {
-                event = "qb-busjob:client:TakeVehicle",
+                event = "bj-busjob:client:TakeVehicle",
                 args = {
                     model = v.model
                 }
@@ -171,23 +171,23 @@ local function busGarage()
     exports['qb-menu']:openMenu(vehicleMenu)
 end
 
-RegisterNetEvent("qb-busjob:client:TakeVehicle", function(data)
+RegisterNetEvent("bj-busjob:client:TakeVehicle", function(data)
     local coords = Config.Location
     if (BusData.Active) then
-        QBCore.Functions.Notify(Lang:t('error.one_bus_active'), 'error')
+        BJCore.Functions.Notify(Lang:t('error.one_bus_active'), 'error')
         return
     else
-        QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
+        BJCore.Functions.TriggerCallback('BJCore:Server:SpawnVehicle', function(netId)
             local veh = NetToVeh(netId)
             SetVehicleNumberPlateText(veh, Lang:t('info.bus_plate') .. tostring(math.random(1000, 9999)))
             exports['LegacyFuel']:SetFuel(veh, 100.0)
             closeMenuFull()
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-            TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
+            TriggerEvent("vehiclekeys:client:SetOwner", BJCore.Functions.GetPlate(veh))
             SetVehicleEngineOn(veh, true, true)
         end, data.model, coords, true)
         Wait(1000)
-        TriggerEvent('qb-busjob:client:DoBusNpc')
+        TriggerEvent('bj-busjob:client:DoBusNpc')
     end
 end)
 
@@ -199,22 +199,22 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    PlayerData = QBCore.Functions.GetPlayerData()
+RegisterNetEvent('BJCore:Client:OnPlayerLoaded', function()
+    PlayerData = BJCore.Functions.GetPlayerData()
     updateBlip()
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+RegisterNetEvent('BJCore:Client:OnPlayerUnload', function()
     PlayerData = {}
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+RegisterNetEvent('BJCore:Client:OnJobUpdate', function(JobInfo)
     PlayerData.job = JobInfo
     updateBlip()
 
 end)
 
-RegisterNetEvent('qb-busjob:client:DoBusNpc', function()
+RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
     if whitelistedVehicle() then
         if not NpcData.Active then
             local Gender = math.random(1, #Config.NpcSkins)
@@ -230,7 +230,7 @@ RegisterNetEvent('qb-busjob:client:DoBusNpc', function()
             if NpcData.NpcBlip ~= nil then
                 RemoveBlip(NpcData.NpcBlip)
             end
-            QBCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
+            BJCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
             NpcData.NpcBlip = AddBlipForCoord(Config.NPCLocations.Locations[route].x, Config.NPCLocations.Locations[route].y, Config.NPCLocations.Locations[route].z)
             SetBlipColour(NpcData.NpcBlip, 3)
             SetBlipRoute(NpcData.NpcBlip, true)
@@ -247,7 +247,7 @@ RegisterNetEvent('qb-busjob:client:DoBusNpc', function()
             PolyZone:onPlayerInOut(function(isPointInside)
                 if isPointInside then
                     inRange = true
-                    exports["qb-core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
+                    exports["core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
                     CreateThread(function()
                         repeat
                             Wait(5)
@@ -266,29 +266,29 @@ RegisterNetEvent('qb-busjob:client:DoBusNpc', function()
                                 ClearPedTasksImmediately(NpcData.Npc)
                                 FreezeEntityPosition(NpcData.Npc, false)
                                 TaskEnterVehicle(NpcData.Npc, veh, -1, freeSeat, 1.0, 0)
-                                QBCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
+                                BJCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
                                 if NpcData.NpcBlip ~= nil then
                                     RemoveBlip(NpcData.NpcBlip)
                                 end
                                 GetDeliveryLocation()
                                 NpcData.NpcTaken = true
-                                TriggerServerEvent('qb-busjob:server:NpcPay')
-                                exports["qb-core"]:HideText()
+                                TriggerServerEvent('bj-busjob:server:NpcPay')
+                                exports["core"]:HideText()
                                 PolyZone:destroy()
                                 break
                             end
                         until not inRange
                     end)
                 else
-                    exports["qb-core"]:HideText()
+                    exports["core"]:HideText()
                     inRange = false
                 end
             end)
         else
-            QBCore.Functions.Notify(Lang:t('error.already_driving_bus'), 'error')
+            BJCore.Functions.Notify(Lang:t('error.already_driving_bus'), 'error')
         end
     else
-        QBCore.Functions.Notify(Lang:t('error.not_in_bus'), 'error')
+        BJCore.Functions.Notify(Lang:t('error.not_in_bus'), 'error')
     end
 end)
 
@@ -309,33 +309,33 @@ CreateThread(function()
                     repeat
                         Wait(5)
                         if not inVeh then
-                            exports["qb-core"]:DrawText(Lang:t('info.busstop_text'), 'left')
+                            exports["core"]:DrawText(Lang:t('info.busstop_text'), 'left')
                             if IsControlJustReleased(0, 38) then
                                 busGarage()
-                                exports["qb-core"]:HideText()
+                                exports["core"]:HideText()
                                 break
                             end
                         else
-                            exports["qb-core"]:DrawText(Lang:t('info.bus_stop_work'), 'left')
+                            exports["core"]:DrawText(Lang:t('info.bus_stop_work'), 'left')
                             if IsControlJustReleased(0, 38) then
                                 if (not NpcData.Active or NpcData.Active and NpcData.NpcTaken == false) then
                                     if IsPedInAnyVehicle(PlayerPedId(), false) then
                                         BusData.Active = false;
                                         DeleteVehicle(GetVehiclePedIsIn(PlayerPedId()))
                                         RemoveBlip(NpcData.NpcBlip)
-                                        exports["qb-core"]:HideText()
+                                        exports["core"]:HideText()
                                         resetNpcTask()
                                         break
                                     end
                                 else
-                                    QBCore.Functions.Notify(Lang:t('error.drop_off_passengers'), 'error')
+                                    BJCore.Functions.Notify(Lang:t('error.drop_off_passengers'), 'error')
                                 end
                             end
                         end
                     until not inRange
                 end)
             else
-                exports["qb-core"]:HideText()
+                exports["core"]:HideText()
                 inRange = false
             end
         end

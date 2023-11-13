@@ -1,5 +1,5 @@
 # qb-busjob
-Bus Job For QB-Core
+Bus Job For BJ-Core
 
 # License
 

@@ -48,7 +48,7 @@ local function updateBlip()
         SetBlipAsShortRange(busBlip, true)
         SetBlipColour(busBlip, 49)
         BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName(Lang:t('info.bus_depot'))
+        AddTextComponentSubstringPlayerName('Bus Depot')
         EndTextCommandSetBlipName(busBlip)
     elseif busBlip ~= nil then
         RemoveBlip(busBlip)
@@ -101,7 +101,7 @@ local function GetDeliveryLocation()
     PolyZone:onPlayerInOut(function(isPointInside)
         if isPointInside then
             inRange = true
-            exports["core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
+            exports["core"]:DrawText('[E] Bus Stop', 'rgb(220, 20, 60)')
             CreateThread(function()
                 repeat
                     Wait(0)
@@ -113,7 +113,7 @@ local function GetDeliveryLocation()
                         SetEntityAsNoLongerNeeded(NpcData.Npc)
                         local targetCoords = Config.NPCLocations.Locations[NpcData.LastNpc]
                         TaskGoStraightToCoord(NpcData.Npc, targetCoords.x, targetCoords.y, targetCoords.z, 1.0, -1, 0.0, 0.0)
-                        BJCore.Functions.Notify(Lang:t('success.dropped_off'), 'success')
+                        BJCore.Functions.Notify('Person was dropped off', 'success')
                         if NpcData.DeliveryBlip ~= nil then
                             RemoveBlip(NpcData.DeliveryBlip)
                         end
@@ -147,7 +147,7 @@ end
 local function busGarage()
     local vehicleMenu = {
         {
-            header = Lang:t('menu.bus_header'),
+            header = 'Bus Vehicles',
             isMenuHeader = true
         }
     }
@@ -163,7 +163,7 @@ local function busGarage()
         }
     end
     vehicleMenu[#vehicleMenu + 1] = {
-        header = Lang:t('menu.bus_close'),
+        header = '⬅ Close Menu',
         params = {
             event = "qb-menu:client:closeMenu"
         }
@@ -174,12 +174,12 @@ end
 RegisterNetEvent("bj-busjob:client:TakeVehicle", function(data)
     local coords = Config.Location
     if (BusData.Active) then
-        BJCore.Functions.Notify(Lang:t('error.one_bus_active'), 'error')
+        BJCore.Functions.Notify('You can only have one active bus at a time', 'error')
         return
     else
         BJCore.Functions.TriggerCallback('BJCore:Server:SpawnVehicle', function(netId)
             local veh = NetToVeh(netId)
-            SetVehicleNumberPlateText(veh, Lang:t('info.bus_plate') .. tostring(math.random(1000, 9999)))
+            SetVehicleNumberPlateText(veh, 'BUS' .. tostring(math.random(1000, 9999)))
             exports['LegacyFuel']:SetFuel(veh, 100.0)
             closeMenuFull()
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
@@ -230,7 +230,7 @@ RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
             if NpcData.NpcBlip ~= nil then
                 RemoveBlip(NpcData.NpcBlip)
             end
-            BJCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
+            BJCore.Functions.Notify('Go to the bus stop', 'primary')
             NpcData.NpcBlip = AddBlipForCoord(Config.NPCLocations.Locations[route].x, Config.NPCLocations.Locations[route].y, Config.NPCLocations.Locations[route].z)
             SetBlipColour(NpcData.NpcBlip, 3)
             SetBlipRoute(NpcData.NpcBlip, true)
@@ -247,7 +247,7 @@ RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
             PolyZone:onPlayerInOut(function(isPointInside)
                 if isPointInside then
                     inRange = true
-                    exports["core"]:DrawText(Lang:t('info.busstop_text'), 'rgb(220, 20, 60)')
+                    exports["core"]:DrawText('[E] Bus Stop', 'rgb(220, 20, 60)')
                     CreateThread(function()
                         repeat
                             Wait(5)
@@ -266,7 +266,7 @@ RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
                                 ClearPedTasksImmediately(NpcData.Npc)
                                 FreezeEntityPosition(NpcData.Npc, false)
                                 TaskEnterVehicle(NpcData.Npc, veh, -1, freeSeat, 1.0, 0)
-                                BJCore.Functions.Notify(Lang:t('info.goto_busstop'), 'primary')
+                                BJCore.Functions.Notify('Go to the bus stop', 'primary')
                                 if NpcData.NpcBlip ~= nil then
                                     RemoveBlip(NpcData.NpcBlip)
                                 end
@@ -285,10 +285,10 @@ RegisterNetEvent('bj-busjob:client:DoBusNpc', function()
                 end
             end)
         else
-            BJCore.Functions.Notify(Lang:t('error.already_driving_bus'), 'error')
+            BJCore.Functions.Notify('You are already driving a bus', 'error')
         end
     else
-        BJCore.Functions.Notify(Lang:t('error.not_in_bus'), 'error')
+        BJCore.Functions.Notify('You are not in a bus', 'error')
     end
 end)
 
@@ -309,14 +309,14 @@ CreateThread(function()
                     repeat
                         Wait(5)
                         if not inVeh then
-                            exports["core"]:DrawText(Lang:t('info.busstop_text'), 'left')
+                            exports["core"]:DrawText('[E] Bus Stop', 'left')
                             if IsControlJustReleased(0, 38) then
                                 busGarage()
                                 exports["core"]:HideText()
                                 break
                             end
                         else
-                            exports["core"]:DrawText(Lang:t('info.bus_stop_work'), 'left')
+                            exports["core"]:DrawText('[E] Stop Working', 'left')
                             if IsControlJustReleased(0, 38) then
                                 if (not NpcData.Active or NpcData.Active and NpcData.NpcTaken == false) then
                                     if IsPedInAnyVehicle(PlayerPedId(), false) then
@@ -328,7 +328,7 @@ CreateThread(function()
                                         break
                                     end
                                 else
-                                    BJCore.Functions.Notify(Lang:t('error.drop_off_passengers'), 'error')
+                                    BJCore.Functions.Notify('Drop off the passengers before you stop working', 'error')
                                 end
                             end
                         end
